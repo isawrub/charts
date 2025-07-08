@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Print Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .print-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+        
+        .hidden-container {
+            display: none;
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>PDF Print Demo</h1>
+        <button class="print-button" onclick="printPDF()">Print PDF</button>
+        
+        <p>Click the "Print PDF" button above to trigger the print dialog for the hidden PDF document.</p>
+        
+        <p><strong>Note:</strong> The PDF URL in the iframe src attribute has to be a blob or from the same domain for this to work!</p>
+    </div>
+
+    <!-- Hidden container with PDF iframe -->
+    <div class="hidden-container" id="hiddenContainer">
+        <iframe 
+            class="pdf-iframe" 
+            id="pdfFrame" 
+            src="/charts/memo.pdf">
+        </iframe>
+    </div>
+
+    <script>
+        function printPDF() {
+            try {
+                // Get the iframe element
+                const iframe = document.getElementById('pdfFrame');
+                
+                // Try to access the iframe's content window and trigger print
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } else {
+                    // Fallback: open PDF in new window and print
+                    const pdfUrl = iframe.src;
+                    const printWindow = window.open(pdfUrl, '_blank');
+                    
+                    printWindow.onload = function() {
+                        printWindow.focus();
+                        printWindow.print();
+                    };
+                }
+            } catch (error) {
+                console.error('Error printing PDF:', error);
+                alert('Unable to print PDF. This may be due to browser security restrictions or the PDF source.');
+            }
+        }
+        
+        // Optional: Ensure iframe is loaded before allowing print
+        document.getElementById('pdfFrame').onload = function() {
+            console.log('PDF loaded successfully');
+        };
+    </script>
+</body>
+</html>
